@@ -74,10 +74,17 @@ namespace ThinkOrSwim
                 {
                     var id = (int)refresh[0, i];
                     var data = this.topics.Get(id);
-                    this.queue.Push(new Quote(
-                        data.Item1,
-                        data.Item2, 
-                        double.Parse(refresh[1, i].ToString())));
+                    try
+                    {
+                        this.queue.Push(new Quote(
+                            data.Item1,
+                            data.Item2,
+                            double.Parse(refresh[1, i].ToString())));
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
                 }
             }
         }

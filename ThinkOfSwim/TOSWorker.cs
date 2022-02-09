@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RabbitMQ.Client;
@@ -10,13 +11,30 @@ namespace ThinkOrSwim
     {
         public bool KeepAlive { get; set; } = true;
         private Client client = new Client();
+        private bool includeForex = false;
+        private bool includeFutures = true;
 
         public void Run()
         {
-            new string[] { "EUR/USD", "USD/JPY", "GBP/USD", "USD/CHF", "AUD/USD", "USD/CAD" }.ToList().ForEach(instrument => {
+            var futures = new string[] { "/ES:XCME", "/NQ:XCME", "/RTY:XCME", "/YM:XCBT", "/CL:XNYM", "/GC:XCEC" };
+            var forex = new string[] { "EUR/USD", "USD/JPY", "GBP/USD", "USD/CHF", "AUD/USD", "USD/CAD" };
+
+            var activeList = new List<string>();
+
+            if(includeFutures)
+            {
+                activeList.AddRange(futures.ToList());
+            }
+
+            if(includeForex)
+            {
+                activeList.AddRange(forex.ToList());
+            }
+
+            activeList.ForEach(instrument => {
                 client.Add(instrument, QuoteType.Bid);
                 client.Add(instrument, QuoteType.Ask);
-            }); 
+            });
             
             while (KeepAlive)
             {
